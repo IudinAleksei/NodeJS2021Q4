@@ -1,33 +1,16 @@
 import { Transform } from 'stream';
+import { shiftUTFChar } from './utils.js';
 
 export class CryptTransform extends Transform {
   constructor(opt = {}) {
     super(opt);
-    this.on('close', () => {
-      console.log('\n------ Transform on close');
-    })
-      .on('drain', () => {
-        console.log('\n------ Transform on drain');
-      })
-      .on('error', (err) => {
-        console.log('\n------ Transform on error', err);
-      })
-      .on('finish', () => {
-        console.log('\n------ Transform on finish');
-      })
-      .on('end', () => {
-        console.log('\n------ Transform on end');
-      })
-      .on('pipe', () => {
-        console.log('\n------ Transform on pipe');
-      });
   }
 
-  _transform(chunk, encoding = 'utf8', callback) {
+  _transform(chunk, encoding, callback) {
     try {
-      const resultString = chunk.toString(encoding).toUpperCase();
+      const resultString = chunk.toString('utf8');
 
-      callback(null, resultString);
+      callback(null, shiftUTFChar(resultString, -10));
     } catch (err) {
       callback(err);
     }
