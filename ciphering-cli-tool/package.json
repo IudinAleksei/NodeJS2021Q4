@@ -5,19 +5,21 @@
   "main": "my_ciphering_cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon my_ciphering_cli.js"
+    "dev": "nodemon my_ciphering_cli.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint --fix --ext .js"
   },
   "type": "module",
   "keywords": [],
   "author": "IudinAleksei",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.1.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.2",
-    "eslint-plugin-prettier": "^4.0.0",
+    "eslint": "8.1.0",
+    "eslint-config-airbnb-base": "14.2.1",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-import": "2.25.2",
+    "eslint-plugin-prettier": "4.0.0",
     "nodemon": "2.0.14",
-    "prettier": "^2.4.1"
+    "prettier": "2.4.1"
   }
 }

@@ -1,9 +1,13 @@
-import * as fs from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 
 export const readStream = () => {
-  return fs.createReadStream('hello.txt');
+  const stream = createReadStream('hello.txt', { encoding: 'utf-8' });
+  stream.on('error', (error) => console.error(error.message));
+  return stream;
 };
 
 export const writeStream = () => {
-  return fs.createWriteStream('output.txt');
+  const stream = createWriteStream('output.txt', { encoding: 'utf-8', flags: 'a' });
+  stream.on('error', (error) => console.error(error.message));
+  return stream;
 };
