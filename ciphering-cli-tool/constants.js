@@ -1,6 +1,9 @@
-export const INPUT_FLAG = ['--input', '-i'];
-export const OUTPUT_FLAG = ['--output', '-o'];
-export const CONFIG_FLAG = ['--config', '-c'];
+export const FLAGS = Object.freeze({
+  input: ['--input', '-i'],
+  output: ['--output', '-o'],
+  config: ['--config', '-c'],
+});
+
 export const CONFIG_DIVIDER = '-';
 export const CODING_RANGE_UTF8 = Object.freeze({
   UpperCaseEnglish: [65, 90],

@@ -1,13 +1,13 @@
-import { getFlags, getOptionValue, parseConfig } from './commands.js';
-import { CONFIG_FLAG, INPUT_FLAG } from './constants.js';
-import { CryptTransform } from './crypt.js';
+import { pipeline } from 'stream';
+import { getKnownArgObj, configStringToShiftsArray } from './commands.js';
+import { chiperStream } from './crypt.js';
 import { readStream, writeStream } from './files.js';
 
-const read = readStream();
-const write = writeStream();
-const transform = new CryptTransform();
-// const flags = getFlags();
-// const config = getOptionValue(flags, CONFIG_FLAG);
-// console.log(parseConfig(config));
+const { input, output, config } = getKnownArgObj();
+const shiftsArray = configStringToShiftsArray(config);
 
-read.pipe(transform).pipe(write);
+const chiperArray = shiftsArray.map((shift) => chiperStream(shift));
+
+try {
+  pipeline(readStream(input), ...chiperArray, writeStream(output), () => {});
+} catch (err) {}

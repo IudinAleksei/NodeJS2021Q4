@@ -1,18 +1,13 @@
 import { Transform } from 'stream';
-import { shiftUTFChar } from './utils.js';
+import { chiperString } from './utils.js';
 
-export class CryptTransform extends Transform {
-  constructor(opt = {}) {
-    super(opt);
-  }
-
-  _transform(chunk, encoding, callback) {
-    try {
-      const resultString = chunk.toString('utf8');
-
-      callback(null, shiftUTFChar(resultString, -10));
-    } catch (err) {
-      callback(err);
-    }
-  }
-}
+export const chiperStream = (shift) =>
+  new Transform({
+    transform(chunk, encoding, callback) {
+      try {
+        callback(null, chiperString(chunk.toString('utf8'), shift));
+      } catch (err) {
+        callback(err);
+      }
+    },
+  });
