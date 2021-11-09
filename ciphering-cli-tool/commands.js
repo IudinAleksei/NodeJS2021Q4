@@ -1,30 +1,23 @@
-import { CONFIG_DIVIDER, CRYPT_KEYS, FLAGS, CRYPT_TABLE } from './constants.js';
+import { FLAGS } from './constants.js';
+import { validateNumberOfCliArgs, validateConfig, validateArgDuplication } from './validation.js';
 
 const getCliArgs = () => {
-  const [, , ...flags] = process.argv;
-  return flags;
+  const [, , ...args] = process.argv;
+  return args;
 };
 
-const getArgValue = (flags, option) => {
-  const index = flags.findIndex((flag) => option.includes(flag));
-  return index === -1 ? null : flags[index + 1];
-};
-
-const parseConfig = (configString) => {
-  const configArr = configString.split(CONFIG_DIVIDER);
-  const filtered = configArr.filter((item) => CRYPT_KEYS.includes(item));
-  if (filtered.length !== configArr.length) {
-    throw new Error('invalid config');
-  }
-  return filtered;
-};
-
-export const configStringToShiftsArray = (configString) => {
-  const configArray = parseConfig(configString);
-  return configArray.map((conf) => CRYPT_TABLE[conf]);
+const getArgValue = (args, option) => {
+  validateArgDuplication(args, option);
+  const index = args.findIndex((arg) => option.includes(arg));
+  return index === -1 ? null : args[index + 1];
 };
 
 export const getKnownArgObj = () => {
   const args = getCliArgs();
-  return Object.fromEntries(Object.entries(FLAGS).map(([key, value]) => [key, getArgValue(args, value)]));
+  validateNumberOfCliArgs(args);
+
+  const knownArgObj = Object.fromEntries(Object.entries(FLAGS).map(([key, value]) => [key, getArgValue(args, value)]));
+  validateConfig(knownArgObj.config);
+
+  return knownArgObj;
 };

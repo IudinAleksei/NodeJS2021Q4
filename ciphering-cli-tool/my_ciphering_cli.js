@@ -1,13 +1,16 @@
 import { pipeline } from 'stream';
-import { getKnownArgObj, configStringToShiftsArray } from './commands.js';
-import { chiperStream } from './crypt.js';
+import { getKnownArgObj } from './commands.js';
+import { exitWithError } from './errors.js';
 import { readStream, writeStream } from './files.js';
+import { createCipherStreamsArray } from './crypt.js';
 
-const { input, output, config } = getKnownArgObj();
-const shiftsArray = configStringToShiftsArray(config);
+const run = () => {
+  try {
+    const { input, output, config } = getKnownArgObj();
+    pipeline(readStream(input), ...createCipherStreamsArray(config), writeStream(output), () => {});
+  } catch (err) {
+    exitWithError(err);
+  }
+};
 
-const chiperArray = shiftsArray.map((shift) => chiperStream(shift));
-
-try {
-  pipeline(readStream(input), ...chiperArray, writeStream(output), () => {});
-} catch (err) {}
+run();
