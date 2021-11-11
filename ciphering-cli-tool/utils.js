@@ -1,3 +1,5 @@
+import { CODING_RANGE_UTF8 } from './constants.js';
+
 export const parseConfig = (configString, divider) => {
   return configString.split(divider);
 };
@@ -14,44 +16,31 @@ const reverseLetterCode = (startTableIndex, AlphabetLength, charIndex) => {
   return result;
 };
 
-/** code below need to be refactor */
+const mapString = (string, callback) => {
+  return string
+    .split('')
+    .map((char) => callback(char))
+    .join('');
+};
 
-const shiftUTFChar = (char, shift) => {
+const transformChar = (char, transformHook) => {
   const charCode = char.charCodeAt();
-  if (charCode >= 65 && charCode <= 90) {
-    const shiftedCode = shiftLetterCycle(65, 26, charCode + shift);
-    return String.fromCharCode(shiftedCode);
-  }
-  if (charCode >= 97 && charCode <= 122) {
-    const shiftedCode = shiftLetterCycle(97, 26, charCode + shift);
-    return String.fromCharCode(shiftedCode);
+  const codeRange = Object.values(CODING_RANGE_UTF8).find((range) => charCode >= range[0] && charCode <= range[1]);
+  if (codeRange?.length) {
+    const rangeLength = codeRange[1] - codeRange[0] + 1;
+    const newCode = transformHook(codeRange[0], rangeLength, charCode);
+    return String.fromCharCode(newCode);
   }
   return char;
 };
 
-export const shiftStringChars = (string, shift) => {
-  return string
-    .split('')
-    .map((char) => shiftUTFChar(char, shift))
-    .join('');
-};
+const shiftUTFChar = (char, shift) =>
+  transformChar(char, (startTableIndex, AlphabetLength, charIndex) =>
+    shiftLetterCycle(startTableIndex, AlphabetLength, charIndex + shift),
+  );
 
-const atbashTransformChar = (char) => {
-  const charCode = char.charCodeAt();
-  if (charCode >= 65 && charCode <= 90) {
-    const shiftedCode = reverseLetterCode(65, 26, charCode);
-    return String.fromCharCode(shiftedCode);
-  }
-  if (charCode >= 97 && charCode <= 122) {
-    const shiftedCode = reverseLetterCode(97, 26, charCode);
-    return String.fromCharCode(shiftedCode);
-  }
-  return char;
-};
+export const shiftStringChars = (string, shift) => mapString(string, (char) => shiftUTFChar(char, shift));
 
-export const atbashStringChars = (string) => {
-  return string
-    .split('')
-    .map((char) => atbashTransformChar(char))
-    .join('');
-};
+const atbashTransformChar = (char) => transformChar(char, reverseLetterCode);
+
+export const atbashStringChars = (string) => mapString(string, atbashTransformChar);
