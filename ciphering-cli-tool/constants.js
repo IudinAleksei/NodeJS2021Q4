@@ -11,6 +11,8 @@ export const CODING_RANGE_UTF8 = Object.freeze({
   LowerCaseEnglish: [97, 122],
 });
 
+export const CODING_RANGE_ARRAY = Object.values(CODING_RANGE_UTF8);
+
 export const CIPHER_SHIFTS = Object.freeze({
   C0: -1,
   C1: 1,

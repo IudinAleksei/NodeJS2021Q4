@@ -1,4 +1,4 @@
-import { CODING_RANGE_UTF8 } from './constants.js';
+import { CODING_RANGE_ARRAY } from './constants.js';
 
 export const parseConfig = (configString, divider) => {
   return configString.split(divider);
@@ -25,7 +25,7 @@ const mapString = (string, callback) => {
 
 const transformChar = (char, transformHook) => {
   const charCode = char.charCodeAt();
-  const codeRange = Object.values(CODING_RANGE_UTF8).find((range) => charCode >= range[0] && charCode <= range[1]);
+  const codeRange = CODING_RANGE_ARRAY.find((range) => charCode >= range[0] && charCode <= range[1]);
   if (codeRange?.length) {
     const rangeLength = codeRange[1] - codeRange[0] + 1;
     const newCode = transformHook(codeRange[0], rangeLength, charCode);
