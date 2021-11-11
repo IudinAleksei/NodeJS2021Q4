@@ -14,6 +14,8 @@ const reverseLetterCode = (startTableIndex, AlphabetLength, charIndex) => {
   return result;
 };
 
+/** code below need to be refactor */
+
 const shiftUTFChar = (char, shift) => {
   const charCode = char.charCodeAt();
   if (charCode >= 65 && charCode <= 90) {

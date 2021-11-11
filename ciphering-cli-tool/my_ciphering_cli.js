@@ -7,7 +7,11 @@ import { createCipherStreamsArray } from './crypt.js';
 const run = () => {
   try {
     const { input, output, config } = getKnownArgObj();
-    pipeline(readStream(input), ...createCipherStreamsArray(config), writeStream(output), () => {});
+    pipeline(readStream(input), ...createCipherStreamsArray(config), writeStream(output), (err) => {
+      if (err instanceof Error) {
+        exitWithError(err);
+      }
+    });
   } catch (err) {
     exitWithError(err);
   }
