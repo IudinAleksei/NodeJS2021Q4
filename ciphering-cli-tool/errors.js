@@ -1,10 +1,25 @@
 import { stderr, exit } from 'process';
+import { ERROR_MESSAGES } from './constants.js';
 
-export const printError = (error) => {
-  stderr.write(error.message);
+export const printError = (message) => {
+  stderr.write(message);
 };
 
 export const exitWithError = (error) => {
-  printError(error);
+  const message = error instanceof FileIOError ? error.customMessage : error.message;
+  printError(message);
   exit(1);
 };
+
+export class FileIOError extends Error {
+  constructor(error, inputOrOutput) {
+    super(error.message);
+    this.path = error.path;
+    this.code = error.code;
+    this.IO = inputOrOutput;
+  }
+
+  get customMessage() {
+    return `${ERROR_MESSAGES[this.code]} ${this.path}, set correct ${this.IO} argument`;
+  }
+}

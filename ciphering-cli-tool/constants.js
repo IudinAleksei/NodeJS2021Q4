@@ -31,4 +31,6 @@ export const ERROR_MESSAGES = Object.freeze({
   )} divided by ${CONFIG_DIVIDER} acceptable`,
   noPairArgumnent: 'CLIARG: invalid arguments number, this tool accepts only paired arguments',
   duplicateArgument: 'CLIARG: arguments duplication found: next argument printed more than one time: ',
+  ENOENT: 'FILEIO: file does not exist: ',
+  EPERM: 'FILEIO: no permissions to access file: ',
 });
