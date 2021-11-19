@@ -20,6 +20,6 @@ export class FileIOError extends Error {
   }
 
   get customMessage() {
-    return `${ERROR_MESSAGES[this.code]} ${this.path}, set correct ${this.IO} argument`;
+    return `${ERROR_MESSAGES[this.code]}${this.path}, set correct ${this.IO} argument`;
   }
 }
