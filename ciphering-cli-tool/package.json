@@ -5,6 +5,7 @@
   "main": "my_ciphering_cli.js",
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "dev": "nodemon my_ciphering_cli.js",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint --fix --ext .js"
