@@ -3,27 +3,26 @@ import { shiftStringChars, atbashStringChars } from './utils.js';
 import { CIPHER_SHIFTS, CONFIG_DIVIDER } from './constants.js';
 import { parseConfig } from './utils.js';
 
-const shiftCipherStreamFactory = (shift) =>
+const createTransform = (transformFunc) =>
   new Transform({
     transform(chunk, encoding, callback) {
       try {
-        callback(null, shiftStringChars(chunk.toString('utf8'), shift));
+        callback(null, transformFunc(chunk.toString('utf8')));
       } catch (err) {
         callback(err);
       }
     },
   });
 
-const atbashCipherStreamFactory = () =>
-  new Transform({
-    transform(chunk, encoding, callback) {
-      try {
-        callback(null, atbashStringChars(chunk.toString('utf8')));
-      } catch (err) {
-        callback(err);
-      }
-    },
-  });
+const shiftCipherStreamFactory = (shift) => {
+  const transformFunction = (string) => shiftStringChars(string, shift);
+  return createTransform(transformFunction);
+};
+
+const atbashCipherStreamFactory = () => {
+  const transformFunction = (string) => atbashStringChars(string);
+  return createTransform(transformFunction);
+};
 
 const getCipherStreamByConfig = (config) => {
   if (config === 'A') {
