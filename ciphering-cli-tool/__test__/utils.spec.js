@@ -1,4 +1,4 @@
-import { parseConfig, shiftStringChars, atbashStringChars } from './utils.js';
+import { parseConfig, shiftStringChars, atbashStringChars } from '../utils.js';
 describe('test parseConfig function', () => {
   test(`should doesn't contain divider`, () => {
     const testConfig = 'C1-C0-A';

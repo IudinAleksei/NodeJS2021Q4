@@ -1,7 +1,10 @@
-import { execFile } from 'child_process';
-import { writeFileSync, readFileSync, unlinkSync } from 'fs';
+/**
+ * E2E tests for cli tool
+ */
 
-import { ERROR_MESSAGES } from './constants';
+import { execFile } from 'child_process';
+import fs from 'fs';
+import { ERROR_MESSAGES } from '../constants';
 
 describe('test cli arguments duplication', () => {
   test('should throw error about --config duplication and exit with code 1', (done) => {
@@ -106,16 +109,16 @@ describe('test cli arguments validition', () => {
 
 describe('success scenarios', () => {
   beforeAll(() => {
-    writeFileSync('./input_test.txt', 'This is secret. Message about "_" symbol!');
+    fs.writeFileSync('./input_test.txt', 'This is secret. Message about "_" symbol!');
   });
 
   beforeEach(() => {
-    writeFileSync('./output_test.txt', '');
+    fs.writeFileSync('./output_test.txt', '');
   });
 
   afterAll(() => {
-    unlinkSync('./input_test.txt');
-    unlinkSync('./output_test.txt');
+    fs.unlinkSync('./input_test.txt');
+    fs.unlinkSync('./output_test.txt');
   });
 
   test(`should exit with 0 code if passes correct sequence of symbols as argument for --config`, (done) => {
@@ -142,7 +145,7 @@ describe('success scenarios', () => {
         if (error) {
           throw error;
         }
-        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+        expect(fs.readFileSync('./output_test.txt').toString()).toBe(outputString);
       },
     );
 
@@ -165,7 +168,7 @@ describe('success scenarios', () => {
         if (error) {
           throw error;
         }
-        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+        expect(fs.readFileSync('./output_test.txt').toString()).toBe(outputString);
       },
     );
 
@@ -188,7 +191,7 @@ describe('success scenarios', () => {
         if (error) {
           throw error;
         }
-        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+        expect(fs.readFileSync('./output_test.txt').toString()).toBe(outputString);
       },
     );
 
@@ -211,7 +214,7 @@ describe('success scenarios', () => {
         if (error) {
           throw error;
         }
-        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+        expect(fs.readFileSync('./output_test.txt').toString()).toBe(outputString);
       },
     );
 

@@ -1,5 +1,5 @@
 import { ReadStream, WriteStream } from 'fs';
-import { readStream, writeStream } from './files.js';
+import { readStream, writeStream } from '../files.js';
 
 describe('test read stream creation', () => {
   test(`should return stdin if filename doesn't pass`, () => {

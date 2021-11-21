@@ -1,5 +1,5 @@
 import { Transform } from 'stream';
-import { createCipherStreamsArray } from './crypt.js';
+import { createCipherStreamsArray } from '../crypt.js';
 
 describe('test transform streams creation', () => {
   test('should return array of trasform streams', () => {

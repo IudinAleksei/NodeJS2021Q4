@@ -1,4 +1,4 @@
-import { FileIOError } from './errors.js';
+import { FileIOError } from '../errors.js';
 
 describe('test custom file errors class', () => {
   test('should FileIOError message be correct', () => {

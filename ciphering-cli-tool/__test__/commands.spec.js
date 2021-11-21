@@ -1,4 +1,4 @@
-import { getKnownArgObj } from './commands.js';
+import { getKnownArgObj } from '../commands.js';
 
 describe('test getting arguments from cli', () => {
   test('should return correct object with all arguments values', () => {

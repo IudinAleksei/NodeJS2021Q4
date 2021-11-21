@@ -1,4 +1,4 @@
-import { validateNumberOfCliArgs, validateConfig, validateArgDuplication } from './validation.js';
+import { validateNumberOfCliArgs, validateConfig, validateArgDuplication } from '../validation.js';
 
 describe('Config validation function test', () => {
   test('C1-R1-A must be valid', () => {
