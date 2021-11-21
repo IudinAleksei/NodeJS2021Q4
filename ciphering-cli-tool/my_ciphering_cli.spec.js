@@ -1,4 +1,6 @@
 import { execFile } from 'child_process';
+import { writeFileSync, unlinkSync } from 'fs';
+
 import { ERROR_MESSAGES } from './constants';
 
 describe('test cli arguments duplication', () => {
@@ -9,7 +11,7 @@ describe('test cli arguments duplication', () => {
       expect(message.toString()).toBe(`${ERROR_MESSAGES.duplicateArgument}--config or -c`);
     });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(1);
       done();
     });
@@ -22,7 +24,7 @@ describe('test cli arguments duplication', () => {
       expect(message.toString()).toBe(`${ERROR_MESSAGES.duplicateArgument}--output or -o`);
     });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(1);
       done();
     });
@@ -35,7 +37,7 @@ describe('test cli arguments duplication', () => {
       expect(message.toString()).toBe(`${ERROR_MESSAGES.duplicateArgument}--input or -i`);
     });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(1);
       done();
     });
@@ -43,71 +45,161 @@ describe('test cli arguments duplication', () => {
 });
 
 describe('test cli arguments validition', () => {
-  test(`should throw error about doesn't pass -c or --config argument`, (done) => {
+  test(`should throw error about doesn't pass -c or --config argument and exit with code 1`, (done) => {
     const ciphering_tool = execFile('node my_ciphering_cli', [], { shell: true });
 
     ciphering_tool.stderr.on('data', (message) => {
       expect(message.toString()).toBe(ERROR_MESSAGES.noConfig);
     });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(1);
       done();
     });
   });
 
-  test(`should throw error about incorrent symbols in argument for --config`, (done) => {
+  test(`should throw error about incorrent symbols in argument for --config and exit with code 1`, (done) => {
     const ciphering_tool = execFile('node my_ciphering_cli', ['--config C'], { shell: true });
 
     ciphering_tool.stderr.on('data', (message) => {
       expect(message.toString()).toBe(ERROR_MESSAGES.notValidConfig);
     });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(1);
       done();
     });
   });
 
-  test(`should exit with 0 code if passes correct sequence of symbols as argument for --config`, (done) => {
-    const ciphering_tool = execFile(
-      'node my_ciphering_cli',
-      ['--config C1-C0-R1-R0-A', '-i ./input.txt', '-o ./output.txt'], // add fs mocks
-      { shell: true },
-    );
+  test(`should throw error if input file doesn't exist or with no read access and exit with code 1`, (done) => {
+    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1', '-i ./file_undefined.txt'], {
+      shell: true,
+    });
 
-    ciphering_tool.on('close', (code) => {
+    ciphering_tool.stderr.on('data', (message) => {
+      expect(message.toString()).toMatch(ERROR_MESSAGES.ENOENT);
+      done();
+    });
+
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(1);
+      done();
+    });
+  });
+
+  test(`should throw error if output file doesn't exist or with no read access and exit with code 1`, (done) => {
+    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1', '-o ./file_undefined.txt'], {
+      shell: true,
+    });
+
+    ciphering_tool.stderr.on('data', (message) => {
+      expect(message.toString()).toMatch(ERROR_MESSAGES.ENOENT);
+      done();
+    });
+
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(1);
+      done();
+    });
+  });
+});
+
+describe('success scenarios', () => {
+  beforeAll(() => {
+    writeFileSync('./input_test.txt', 'This is secret. Message about "_" symbol!');
+  });
+
+  afterAll(() => {
+    unlinkSync('./input_test.txt');
+  });
+
+  test(`should exit with 0 code if passes correct sequence of symbols as argument for --config`, (done) => {
+    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1-C0-R1-R0-A', '-i ./input_test.txt'], {
+      shell: true,
+    });
+
+    ciphering_tool.on('exit', (code) => {
       expect(code).toBe(0);
       done();
     });
   });
 
-  test(`should throw error if input file doesn't exist or with no read access`, (done) => {
-    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1', '-i ./i.txt'], { shell: true });
-
-    ciphering_tool.stderr.on('data', (message) => {
-      expect(message.toString()).toBe(
-        `${ERROR_MESSAGES.ENOENT}C:\\RSS_Course\\NodeJS2021Q4\\ciphering-cli-tool\\i.txt, set correct --input argument`, // update matcher
-      );
-      done();
+  test(`should encode correct with --config C1-C1-R0-A`, (done) => {
+    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1-C1-R0-A', '-i ./input_test.txt'], {
+      shell: true,
     });
 
-    ciphering_tool.on('close', (code) => {
-      expect(code).toBe(1);
+    const outputString = 'Myxn xn nbdobm. Tbnnfzb ferlm "_" nhteru!';
+
+    ciphering_tool.stdout.on('data', (data) => {
+      expect(data).toBe(outputString);
+    });
+
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(0);
       done();
     });
   });
 
-  test(`should throw error if output file doesn't exist or with no read access`, (done) => {
-    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1', '-o ./o.txt'], { shell: true });
+  test(`should encode correct with --config C1-C0-A-R1-R0-A-R0-R0-C1-A`, (done) => {
+    const ciphering_tool = execFile(
+      'node my_ciphering_cli',
+      ['--config C1-C0-A-R1-R0-A-R0-R0-C1-A', '-i ./input_test.txt'],
+      {
+        shell: true,
+      },
+    );
 
-    ciphering_tool.stderr.on('data', (message) => {
-      expect(message.toString()).toBe(`${ERROR_MESSAGES.ENOENT}./o.txt, set correct --output argument`); // update matcher
-      done();
+    const outputString = 'Vhgw gw wkmxkv. Ckwwoik onauv "_" wqcnad!';
+
+    ciphering_tool.stdout.on('data', (data) => {
+      expect(data).toBe(outputString);
     });
 
-    ciphering_tool.on('close', (code) => {
-      expect(code).toBe(1);
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(0);
+      done();
+    });
+  });
+
+  test(`should encode correct with --config A-A-A-R1-R0-R0-R0-C1-C1-A`, (done) => {
+    const ciphering_tool = execFile(
+      'node my_ciphering_cli',
+      ['--config A-A-A-R1-R0-R0-R0-C1-C1-A', '-i ./input_test.txt'],
+      {
+        shell: true,
+      },
+    );
+
+    const outputString = 'Hvwg wg gsqfsh. Asggous opcih "_" gmapcz!';
+
+    ciphering_tool.stdout.on('data', (data) => {
+      expect(data).toBe(outputString);
+    });
+
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(0);
+      done();
+    });
+  });
+
+  test(`should encode correct with --config C1-R1-C0-C0-A-R0-R1-R1-A-C1`, (done) => {
+    const ciphering_tool = execFile(
+      'node my_ciphering_cli',
+      ['--config C1-R1-C0-C0-A-R0-R1-R1-A-C1', '-i ./input_test.txt'],
+      {
+        shell: true,
+      },
+    );
+
+    const outputString = 'This is secret. Message about "_" symbol!';
+
+    ciphering_tool.stdout.on('data', (data) => {
+      expect(data).toBe(outputString);
+    });
+
+    ciphering_tool.on('exit', (code) => {
+      expect(code).toBe(0);
       done();
     });
   });
