@@ -1,5 +1,5 @@
 import { execFile } from 'child_process';
-import { writeFileSync, unlinkSync } from 'fs';
+import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 
 import { ERROR_MESSAGES } from './constants';
 
@@ -109,8 +109,13 @@ describe('success scenarios', () => {
     writeFileSync('./input_test.txt', 'This is secret. Message about "_" symbol!');
   });
 
+  beforeEach(() => {
+    writeFileSync('./output_test.txt', '');
+  });
+
   afterAll(() => {
     unlinkSync('./input_test.txt');
+    unlinkSync('./output_test.txt');
   });
 
   test(`should exit with 0 code if passes correct sequence of symbols as argument for --config`, (done) => {
@@ -125,15 +130,21 @@ describe('success scenarios', () => {
   });
 
   test(`should encode correct with --config C1-C1-R0-A`, (done) => {
-    const ciphering_tool = execFile('node my_ciphering_cli', ['--config C1-C1-R0-A', '-i ./input_test.txt'], {
-      shell: true,
-    });
-
     const outputString = 'Myxn xn nbdobm. Tbnnfzb ferlm "_" nhteru!';
 
-    ciphering_tool.stdout.on('data', (data) => {
-      expect(data).toBe(outputString);
-    });
+    const ciphering_tool = execFile(
+      'node my_ciphering_cli',
+      ['--config C1-C1-R0-A', '-i ./input_test.txt', '-o ./output_test.txt'],
+      {
+        shell: true,
+      },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+      },
+    );
 
     ciphering_tool.on('exit', (code) => {
       expect(code).toBe(0);
@@ -142,19 +153,21 @@ describe('success scenarios', () => {
   });
 
   test(`should encode correct with --config C1-C0-A-R1-R0-A-R0-R0-C1-A`, (done) => {
+    const outputString = 'Vhgw gw wkmxkv. Ckwwoik onauv "_" wqcnad!';
+
     const ciphering_tool = execFile(
       'node my_ciphering_cli',
-      ['--config C1-C0-A-R1-R0-A-R0-R0-C1-A', '-i ./input_test.txt'],
+      ['--config C1-C0-A-R1-R0-A-R0-R0-C1-A', '-i ./input_test.txt', '-o ./output_test.txt'],
       {
         shell: true,
       },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+      },
     );
-
-    const outputString = 'Vhgw gw wkmxkv. Ckwwoik onauv "_" wqcnad!';
-
-    ciphering_tool.stdout.on('data', (data) => {
-      expect(data).toBe(outputString);
-    });
 
     ciphering_tool.on('exit', (code) => {
       expect(code).toBe(0);
@@ -163,19 +176,21 @@ describe('success scenarios', () => {
   });
 
   test(`should encode correct with --config A-A-A-R1-R0-R0-R0-C1-C1-A`, (done) => {
+    const outputString = 'Hvwg wg gsqfsh. Asggous opcih "_" gmapcz!';
+
     const ciphering_tool = execFile(
       'node my_ciphering_cli',
-      ['--config A-A-A-R1-R0-R0-R0-C1-C1-A', '-i ./input_test.txt'],
+      ['--config A-A-A-R1-R0-R0-R0-C1-C1-A', '-i ./input_test.txt', '-o ./output_test.txt'],
       {
         shell: true,
       },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+      },
     );
-
-    const outputString = 'Hvwg wg gsqfsh. Asggous opcih "_" gmapcz!';
-
-    ciphering_tool.stdout.on('data', (data) => {
-      expect(data).toBe(outputString);
-    });
 
     ciphering_tool.on('exit', (code) => {
       expect(code).toBe(0);
@@ -184,19 +199,21 @@ describe('success scenarios', () => {
   });
 
   test(`should encode correct with --config C1-R1-C0-C0-A-R0-R1-R1-A-C1`, (done) => {
+    const outputString = 'This is secret. Message about "_" symbol!';
+
     const ciphering_tool = execFile(
       'node my_ciphering_cli',
-      ['--config C1-R1-C0-C0-A-R0-R1-R1-A-C1', '-i ./input_test.txt'],
+      ['--config C1-R1-C0-C0-A-R0-R1-R1-A-C1', '-i ./input_test.txt', '-o ./output_test.txt'],
       {
         shell: true,
       },
+      (error) => {
+        if (error) {
+          throw error;
+        }
+        expect(readFileSync('./output_test.txt').toString()).toBe(outputString);
+      },
     );
-
-    const outputString = 'This is secret. Message about "_" symbol!';
-
-    ciphering_tool.stdout.on('data', (data) => {
-      expect(data).toBe(outputString);
-    });
 
     ciphering_tool.on('exit', (code) => {
       expect(code).toBe(0);

@@ -19,7 +19,6 @@ export const printError = (message) => {
 };
 
 export const exitWithError = (error) => {
-  const message = error instanceof FileIOError ? error.customMessage : error.message;
-  printError(message);
+  printError(error instanceof FileIOError ? error.customMessage : error.message);
   exit(1);
 };
