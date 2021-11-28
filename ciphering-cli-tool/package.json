@@ -2,9 +2,11 @@
   "name": "ciphering-cli-tool",
   "version": "1.0.0",
   "description": "NodeJS2021Q4 Task#1",
+  "repository": "https://github.com/IudinAleksei/NodeJS2021Q4.git",
   "main": "my_ciphering_cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "coverage": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
     "dev": "nodemon my_ciphering_cli.js",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint --fix --ext .js"
@@ -14,11 +16,14 @@
   "author": "IudinAleksei",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.4",
+    "babel-jest": "^27.3.1",
     "eslint": "8.1.0",
-    "eslint-config-airbnb-base": "14.2.1",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-import": "2.25.2",
     "eslint-plugin-prettier": "4.0.0",
+    "jest": "^27.3.1",
     "nodemon": "2.0.14",
     "prettier": "2.4.1"
   }
